@@ -12,7 +12,7 @@ function addBookFeature() {
 
         // Front-end validations
         if (!title || !author || !isbn || !genre || !availableCopies || !image) {
-            alert("All fields are required. Please fill in the required fields.");
+            alert("All fields are required. Please fill the required fields.");
             return;
         }
 
