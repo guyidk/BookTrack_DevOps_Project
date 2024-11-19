@@ -1,0 +1,14 @@
+{
+    "reporter": [
+        "text",
+        "html"
+    ],
+    "include": [
+        "utils/*.js"
+    ],
+    "reportDir": "coverage/backend",
+    "branches": 80,
+    "lines": 80,
+    "functions": 80,
+    "statements": 80
+}
