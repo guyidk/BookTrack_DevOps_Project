@@ -9,13 +9,20 @@ async function searchBooks(req, res) {
     if (!query || typeof query !== 'string' || query.trim() === '') {
         return res.status(400).json({ error: 'Invalid parameter: "query" is required and must be a non-empty string.' });
     }
+
     // Limit query length to 100 characters
     if (query.length > 100) {
         return res.status(400).json({ error: 'Query is too long. Max length is 100 characters.' });
     }
 
+    // Check for special characters in the query (only allow alphanumeric and space)
+    const specialCharacterRegex = /[^a-zA-Z0-9\s]/; // Regular expression to check for non-alphanumeric characters
+    if (specialCharacterRegex.test(query)) {
+        return res.status(400).json({ error: 'Query contains special characters. Only alphanumeric characters and spaces are allowed.' });
+    }
+
     try {
-        // Search for books that match the title 
+        // Search for books that match the title
         const filteredBooks = await Book.find({
             title: { $regex: escapeRegex(query), $options: 'i' } // Case-insensitive search with escaped query
         });

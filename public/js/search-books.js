@@ -13,8 +13,13 @@ function searchBooks() {
         alert('Search term is too long. Please limit to 100 characters.');
         return; // Exit function if the query exceeds 100 characters
     }
-    
-    // Removed input sanitization for special characters
+
+    // Check for special characters in the query (only allow alphanumeric and space)
+    const specialCharacterRegex = /[^a-zA-Z0-9\s]/; // Regular expression to check for non-alphanumeric characters
+    if (specialCharacterRegex.test(query)) {
+        alert('Search term contains special characters. Only alphanumeric characters and spaces are allowed.');
+        return; // Exit function if special characters are found
+    }
 
     // Create an XMLHttpRequest to fetch the search results from the backend
     const request = new XMLHttpRequest();
@@ -64,6 +69,7 @@ function searchBooks() {
         console.error('Network error while fetching search results');
         alert('An error occurred while fetching search results. Please check the console for details.');
     };
+
     // Define the ontimeout event handler for request timeout
     request.ontimeout = function () {
         document.getElementById('loading').style.display = 'none'; // Hide loading indicator
@@ -71,6 +77,7 @@ function searchBooks() {
         // Alert the user about the request timeout
         alert('The request timed out. Please try again.');
     };
+
     // Send the request to the server
     request.send();
 }
