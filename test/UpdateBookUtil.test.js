@@ -163,6 +163,32 @@ describe('Update Book Utility', () => {
             expect(res.body.error).toBe('Title already exists.');
         });
         
+        it('should log error and return 500 if an error occurs during book update', async () => {
+            // Simulate an error being thrown by Book.findById
+            Book.findById.mockRejectedValue(new Error('Database error'));
+        
+            // Spy on console.error
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+        
+            // Make the request
+            const res = await request.put('/updateBook/123456')
+                .send({
+                    title: 'Valid Title',
+                    author: 'Valid Author',
+                    isbn: '123456789',
+                    genre: 'Fiction',
+                    availableCopies: 10
+                });
+        
+            // Assertions
+            expect(res.status).toBe(500); // Ensure 500 status code is returned
+            expect(res.body.error).toBe('An error occurred while updating the book.'); // Check error message in response
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error updating book:', expect.any(Error)); // Verify console.error is called with the right arguments
+        
+            // Restore the console.error mock
+            consoleErrorSpy.mockRestore();
+        });     
+
     });
 
     describe('fetchBookById', () => {
@@ -186,6 +212,25 @@ describe('Update Book Utility', () => {
 
             const res = await request.get('/books/671c94d0607a452e0bc99e54');
             expect(res.status).toBe(200);
+        });
+
+        it('should log error and return 500 if an error occurs while fetching the book', async () => {
+            // Simulate an error being thrown by Book.findById
+            Book.findById.mockRejectedValue(new Error('Database error'));
+        
+            // Spy on console.error
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+        
+            // Make the request
+            const res = await request.get('/books/5f8f2c8b6a9d1e2b3c7b8f9a');
+        
+            // Assertions
+            expect(res.status).toBe(500); // Ensure 500 status code is returned
+            expect(res.text).toBe('Server error'); // Check error message in response
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching book by ID:', expect.any(Error)); // Verify console.error is called with the right arguments
+        
+            // Restore the console.error mock
+            consoleErrorSpy.mockRestore();
         });
 
     });
