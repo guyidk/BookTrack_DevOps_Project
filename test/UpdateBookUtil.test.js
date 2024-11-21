@@ -39,36 +39,6 @@ describe('Update Book Utility', () => {
 
     describe('updateBook', () => {
 
-        it('should return 400 if uploaded image exceeds 16MB', async () => {
-            const largeBuffer = Buffer.alloc(16 * 1024 * 1024 + 1);
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' }); // Mock book
-            const res = await request.put('/updateBook/123456')
-                .attach('file', largeBuffer, 'largeImage.jpg')
-                .field('title', 'Valid Title')
-                .field('author', 'Valid Author')
-                .field('isbn', '123456789')
-                .field('genre', 'Fiction')
-                .field('availableCopies', 10);
-        
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBe('Image size should not exceed 16MB.');
-        });
-        
-        it('should return 400 if uploaded file size is 0 bytes', async () => {
-            const emptyBuffer = Buffer.alloc(0);
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' }); // Mock book
-            const res = await request.put('/updateBook/123456')
-                .attach('file', emptyBuffer, 'emptyImage.jpg')
-                .field('title', 'Valid Title')
-                .field('author', 'Valid Author')
-                .field('isbn', '123456789')
-                .field('genre', 'Fiction')
-                .field('availableCopies', 10);
-        
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBe('Uploaded file is invalid.');
-        });
-
         it('should return 400 if title exceeds 100 characters', async () => {
             const res = await request.put('/updateBook/123456')
                 .send({
@@ -106,11 +76,11 @@ describe('Update Book Utility', () => {
                     genre: 'Fiction',
                     availableCopies: -1
                 });
-        
+
             expect(res.status).toBe(400);
             expect(res.body.error).toBe('Available copies should be more that 0');
         });
-        
+
         it('should return 404 if the book does not exist', async () => {
             Book.findById.mockResolvedValue(null); // Simulate book not found
             const res = await request.put('/updateBook/123456')
@@ -125,6 +95,60 @@ describe('Update Book Utility', () => {
             expect(res.status).toBe(404);
             expect(res.body.error).toBe('Book not found');
         });
+
+        it('should return 400 if uploaded image exceeds 16MB', async () => {
+            const largeBuffer = Buffer.alloc(16 * 1024 * 1024 + 1);
+            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' }); // Mock book
+            const res = await request.put('/updateBook/123456')
+                .attach('file', largeBuffer, 'largeImage.jpg')
+                .field('title', 'Valid Title')
+                .field('author', 'Valid Author')
+                .field('isbn', '123456789')
+                .field('genre', 'Fiction')
+                .field('availableCopies', 10);
+
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBe('Image size should not exceed 16MB.');
+        });
+
+        it('should return 400 if uploaded file size is 0 bytes', async () => {
+            const emptyBuffer = Buffer.alloc(0);
+            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' }); // Mock book
+            const res = await request.put('/updateBook/123456')
+                .attach('file', emptyBuffer, 'emptyImage.jpg')
+                .field('title', 'Valid Title')
+                .field('author', 'Valid Author')
+                .field('isbn', '123456789')
+                .field('genre', 'Fiction')
+                .field('availableCopies', 10);
+
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBe('Uploaded file is invalid.');
+        });
+
+        it('should process a valid image file and convert it to base64', async () => {
+            const validBuffer = Buffer.from('SampleImageContent');
+            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' });
+            Book.findByIdAndUpdate.mockResolvedValue({
+                _id: '123456',
+                title: 'Valid Title',
+                author: 'Valid Author',
+                image: validBuffer.toString('base64'),
+            });
+
+            const res = await request.put('/updateBook/123456')
+                .attach('file', validBuffer, 'sampleImage.jpg')
+                .field('title', 'Valid Title')
+                .field('author', 'Valid Author')
+                .field('isbn', '123456789')
+                .field('genre', 'Fiction')
+                .field('availableCopies', 10);
+
+            expect(res.status).toBe(200);
+            expect(res.body.message).toBe('Book updated successfully!');
+            expect(res.body.book.image).toBe(validBuffer.toString('base64'));
+        });
+
 
         it('should return 200 and update the book successfully', async () => {
             Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' }); // Simulate existing book
@@ -166,10 +190,10 @@ describe('Update Book Utility', () => {
         it('should log error and return 500 if an error occurs during book update', async () => {
             // Simulate an error being thrown by Book.findById
             Book.findById.mockRejectedValue(new Error('Database error'));
-        
+
             // Spy on console.error
             const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
-        
+
             // Make the request
             const res = await request.put('/updateBook/123456')
                 .send({
@@ -179,15 +203,15 @@ describe('Update Book Utility', () => {
                     genre: 'Fiction',
                     availableCopies: 10
                 });
-        
+
             // Assertions
             expect(res.status).toBe(500); // Ensure 500 status code is returned
             expect(res.body.error).toBe('An error occurred while updating the book.'); // Check error message in response
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error updating book:', expect.any(Error)); // Verify console.error is called with the right arguments
-        
+
             // Restore the console.error mock
             consoleErrorSpy.mockRestore();
-        });     
+        });
 
     });
 
@@ -217,18 +241,18 @@ describe('Update Book Utility', () => {
         it('should log error and return 500 if an error occurs while fetching the book', async () => {
             // Simulate an error being thrown by Book.findById
             Book.findById.mockRejectedValue(new Error('Database error'));
-        
+
             // Spy on console.error
             const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
-        
+
             // Make the request
             const res = await request.get('/books/5f8f2c8b6a9d1e2b3c7b8f9a');
-        
+
             // Assertions
             expect(res.status).toBe(500); // Ensure 500 status code is returned
             expect(res.text).toBe('Server error'); // Check error message in response
             expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching book by ID:', expect.any(Error)); // Verify console.error is called with the right arguments
-        
+
             // Restore the console.error mock
             consoleErrorSpy.mockRestore();
         });
