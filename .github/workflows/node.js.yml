@@ -19,7 +19,7 @@ jobs:
         run: rm -rf /home/runner/work/BookTrack_DevOps_Project/BookTrack_DevOps_Project/node_modules/* 
         
       - name: Install dependencies based on package.json
-        run: npm install
+        run: npm ci 
         
       - name: Run tests in "tests" folder
-        run: npm test
+        run: npm test --verbose
