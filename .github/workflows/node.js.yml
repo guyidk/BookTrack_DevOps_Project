@@ -17,7 +17,6 @@ jobs:
           
       - name: Remove existing node_modules folder from cloned project
         run: rm -rf /home/runner/work/BookTrack_DevOps_Project/BookTrack_DevOps_Project/node_modules/* 
-
         
       - name: Install dependencies based on package.json
         run: npm install
