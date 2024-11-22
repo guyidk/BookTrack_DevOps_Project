@@ -1,28 +1,25 @@
-name: Automated Tests
-
+name: Automatic Testing for Resource Management Web App
 on:
   push:
     branches:
-      - main
-
+      - main # Workflow will be triggered whenever there is a push in main branch
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        suite: [UpdateBookUtil.test.js] # Add more test files if needed
-    timeout-minutes: 30
     steps:
-      - name: Checkout code
+      - name: Checkout code from GitHub Repo
         uses: actions/checkout@v3
-
-      - name: Setup Node.js
+        
+      - name: Setup Node.js in Ubuntu
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - name: Install dependencies
+          
+      - name: Remove existing node_modules folder from cloned project
+        run: rm -rf /home/runner/work/BookTrack_DevOps_Project/BookTrack_DevOps_Project/node_modules/* 
+        
+      - name: Install dependencies based on package.json
         run: npm install
-
-      - name: Run tests
-        run: npm test -- ${{ matrix.suite }} -- --detectOpenHandles
+        
+      - name: Run tests in "tests" folder
+        run: npm test
