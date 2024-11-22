@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1732199030349" clover="3.2.0">
-  <project timestamp="1732199030349" name="All files">
+<coverage generated="1732259048591" clover="3.2.0">
+  <project timestamp="1732259048591" name="All files">
     <metrics statements="393" coveredstatements="248" conditionals="30" coveredconditionals="28" methods="7" coveredmethods="2" elements="430" coveredelements="278" complexity="0" loc="393" ncloc="393" packages="3" files="8" classes="8"/>
     <package name="BookTrack_DevOps_Project">
       <metrics statements="64" coveredstatements="63" conditionals="4" coveredconditionals="2" methods="0" coveredmethods="0"/>
