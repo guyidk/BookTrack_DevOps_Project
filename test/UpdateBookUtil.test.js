@@ -11,6 +11,8 @@ jest.mock('../models/book.js');
 // Import the mocked Book model
 const Book = require('../models/book.js');
 
+const { server } = require('../index'); // Import the server instance
+
 const mongoose = require('mongoose'); // Ensure mongoose is imported in your test file
 
 jest.mock('mongoose', () => {
@@ -35,6 +37,7 @@ describe('Update Book Utility', () => {
     afterAll(async () => {
         jest.restoreAllMocks(); // Restore original implementations after each test
         await mongoose.disconnect(); // Properly disconnect the MongoDB connection
+        server.close(); // Close the server to release the open handle
     });
 
     describe('updateBook', () => {
