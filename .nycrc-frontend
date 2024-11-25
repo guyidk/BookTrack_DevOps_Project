@@ -1,0 +1,15 @@
+{
+    "reporter": [
+        "text",
+        "html"
+    ],
+    "include": [
+        " public/js/**/*.js"
+    ],
+    "reportDir": "coverage/frontend",
+    "check-coverage": true,
+    "branches": 80,
+    "lines": 80,
+    "functions": 80,
+    "statements": 80
+}
