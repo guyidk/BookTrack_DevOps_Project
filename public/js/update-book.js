@@ -48,10 +48,6 @@ function isValidISBN(isbn) {
 
 // Function to open the update form with current book details
 async function editBook(bookId) {
-    if (!bookId) {
-        alert('Invalid book ID.');
-        return;
-    }
 
     try {
         // Fetch the book details from the server using the book ID
