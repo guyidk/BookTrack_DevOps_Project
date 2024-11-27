@@ -4,7 +4,7 @@
         "html"
     ],
     "include": [
-        " public/js/**/*.js"
+        "public/js/update-book.js"
     ],
     "reportDir": "coverage/frontend",
     "check-coverage": true,
