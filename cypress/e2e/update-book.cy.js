@@ -10,6 +10,64 @@ describe('Update Book Frontend', () => {
     return cy.task('stopServer'); // Stop the server after the report is done
   });
 
+  it('should display an alert if there is an error while fetching book details for editing', () => {
+    // Intercept the GET request for fetching book details and force a network error
+    cy.intercept('GET', '/books/*', {
+      forceNetworkError: true,
+    }).as('fetchBookDetailsError');
+  
+    // Visit the base URL
+    cy.visit(baseUrl);
+  
+    // Attempt to open the edit form for the first book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+  
+    // Wait for the intercepted request to fail
+    cy.wait('@fetchBookDetailsError');
+  
+    // Validate the error handling with console logs and alerts
+    cy.on('window:alert', (alertText) => {
+      expect(alertText).to.contains('An error occurred while fetching the book details.');
+    });
+  
+    // Optionally, check if the console error message was logged
+    cy.window().then((win) => {
+      cy.stub(win.console, 'error').as('consoleError');
+    });
+  
+    // Ensure the console error was logged
+    cy.get('@consoleError').should(
+      'have.been.calledWith',
+      'Error fetching book for editing:'
+    );
+  });
+
+  it('should display an alert if book details fail to fetch for editing', () => {
+    // Intercept the GET request for fetching book details with a failed response
+    cy.intercept('GET', '/books/*', {
+      statusCode: 500,
+      body: { message: 'Internal Server Error' },
+    }).as('fetchBookDetailsError');
+  
+    // Visit the base URL
+    cy.visit(baseUrl);
+  
+    // Attempt to open the edit form for the first book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+  
+    // Wait for the intercepted request to be triggered
+    cy.wait('@fetchBookDetailsError');
+  
+    // Verify the alert message
+    cy.on('window:alert', (text) => {
+      expect(text).to.contains('Failed to fetch book details for editing.');
+    });
+  });
+
   it('should prevent updating book with a duplicate title', () => {
     cy.visit(baseUrl);
 
@@ -61,6 +119,34 @@ describe('Update Book Frontend', () => {
     });
   });
 
+  it('should hide the image preview if the image is not available', () => {
+    cy.visit(baseUrl);
+
+    // Mock the book details API response to exclude the image
+    cy.intercept('GET', '/books/*', {
+      statusCode: 200,
+      body: {
+        _id: '123',
+        title: 'Book Without Image',
+        author: 'Author Name',
+        isbn: '978-0451524935',
+        genre: 'Fiction',
+        availableCopies: 5,
+        image: null, // No image provided
+      },
+    }).as('getBookDetails');
+
+    // Trigger the edit form for a book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Wait for the mocked API response
+    cy.wait('@getBookDetails');
+
+    // Verify that the image preview element is hidden
+    cy.get('#editBookPreviewImage').should('not.be.visible');
+  });
 
   it('should display an error for invalid ISBN(number >10)', () => {
     cy.visit(baseUrl);
@@ -242,6 +328,5 @@ describe('Update Book Frontend', () => {
       expect(text).to.contains('Book updated successfully!');
     });
   });
-
 
 });
