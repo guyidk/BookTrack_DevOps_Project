@@ -1,5 +1,7 @@
 const { defineConfig } = require("cypress");
 const { spawn } = require("child_process");
+const mongoose = require("mongoose");
+
 let server;
 let baseUrl;
 module.exports = defineConfig({
@@ -36,6 +38,20 @@ module.exports = defineConfig({
             server.kill();
           }
           return null;
+        },
+        disconnectMongoose() {
+          return new Promise((resolve, reject) => {
+            if (mongoose.connection.readyState !== 0) {
+              mongoose.connection.close()
+                .then(() => {
+                  console.log("Mongoose connection closed.");
+                  resolve(null);
+                })
+                .catch((err) => reject(err));
+            } else {
+              resolve(null); // Already disconnected
+            }
+          });
         }
       });
       return config
