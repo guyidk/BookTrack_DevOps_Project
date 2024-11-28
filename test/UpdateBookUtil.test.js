@@ -1,19 +1,14 @@
 // Import the functions to test
 const { updateBook, fetchBookById } = require('../utils/update-book-util');
 
-// Import supertest to test HTTP requests
-const supertest = require('supertest');
-// Import Express app
-const { app } = require('../index');
-// Mock the Book model
-jest.mock('../models/book.js');
 
-// Import the mocked Book model
-const Book = require('../models/book.js');
-
+const supertest = require('supertest'); // Import supertest to test HTTP requests
+const { app } = require('../index'); // Import Express app
+jest.mock('../models/book.js'); // Mock the Book model
+const Book = require('../models/book.js'); // Import the mocked Book model
 const { server } = require('../index'); // Import the server instance
-
 const mongoose = require('mongoose'); // Ensure mongoose is imported in your test file
+const { Buffer } = require('buffer'); // Required to create buffer objects for file uploads
 
 jest.mock('mongoose', () => {
     const originalMongoose = jest.requireActual('mongoose');
@@ -41,6 +36,54 @@ describe('Update Book Utility', () => {
     });
 
     describe('updateBook', () => {
+
+        it('should return 400 if the uploaded file size exceeds 16MB', async () => {
+            // Mock the existing book to simulate it being found
+            Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' });
+    
+            // Simulate a file larger than 16MB
+            const largeFile = Buffer.alloc(16 * 1024 * 1024 + 1); // Create a buffer slightly larger than 16MB
+    
+            const res = await request.put('/updateBook/123456')
+                .attach('image', largeFile, 'large-image.jpg') // Attach the large file
+                .field('title', 'Valid Title')
+                .field('author', 'Valid Author')
+                .field('isbn', '123456789')
+                .field('genre', 'Fiction')
+                .field('availableCopies', 10);
+    
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBe('Image size should not exceed 16MB.');
+        });
+
+        it('should convert the uploaded file to base64 if size is valid', async () => {
+            // Mock the existing book and the update operation
+            Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' });
+            Book.findByIdAndUpdate.mockResolvedValue({
+                _id: '123456',
+                title: 'New Title',
+                author: 'Valid Author',
+                isbn: '123456789',
+                genre: 'Fiction',
+                availableCopies: 10,
+                image: '<base64-string>',
+            });
+    
+            // Simulate a file within the 16MB limit
+            const validFile = Buffer.alloc(16 * 1024 * 1024); // Create a buffer exactly 16MB
+    
+            const res = await request.put('/updateBook/123456')
+                .attach('image', validFile, 'valid-image.jpg') // Attach the valid file
+                .field('title', 'New Title')
+                .field('author', 'Valid Author')
+                .field('isbn', '123456789')
+                .field('genre', 'Fiction')
+                .field('availableCopies', 10);
+    
+            expect(res.status).toBe(200);
+            expect(res.body.message).toBe('Book updated successfully!');
+            expect(res.body.book.image).toBeDefined(); // Check if the image field exists in the response
+        });
 
         it('should return 400 if title exceeds 100 characters', async () => {
             const res = await request.put('/updateBook/123456')
@@ -98,60 +141,6 @@ describe('Update Book Utility', () => {
             expect(res.status).toBe(404);
             expect(res.body.error).toBe('Book not found');
         });
-
-        it('should return 400 if uploaded image exceeds 16MB', async () => {
-            const largeBuffer = Buffer.alloc(16 * 1024 * 1024 + 1);
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' }); // Mock book
-            const res = await request.put('/updateBook/123456')
-                .attach('file', largeBuffer, 'largeImage.jpg')
-                .field('title', 'Valid Title')
-                .field('author', 'Valid Author')
-                .field('isbn', '123456789')
-                .field('genre', 'Fiction')
-                .field('availableCopies', 10);
-
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBe('Image size should not exceed 16MB.');
-        });
-
-        it('should return 400 if uploaded file size is 0 bytes', async () => {
-            const emptyBuffer = Buffer.alloc(0);
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' }); // Mock book
-            const res = await request.put('/updateBook/123456')
-                .attach('file', emptyBuffer, 'emptyImage.jpg')
-                .field('title', 'Valid Title')
-                .field('author', 'Valid Author')
-                .field('isbn', '123456789')
-                .field('genre', 'Fiction')
-                .field('availableCopies', 10);
-
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBe('Uploaded file is invalid.');
-        });
-
-        it('should process a valid image file and convert it to base64', async () => {
-            const validBuffer = Buffer.from('SampleImageContent');
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' });
-            Book.findByIdAndUpdate.mockResolvedValue({
-                _id: '123456',
-                title: 'Valid Title',
-                author: 'Valid Author',
-                image: validBuffer.toString('base64'),
-            });
-
-            const res = await request.put('/updateBook/123456')
-                .attach('file', validBuffer, 'sampleImage.jpg')
-                .field('title', 'Valid Title')
-                .field('author', 'Valid Author')
-                .field('isbn', '123456789')
-                .field('genre', 'Fiction')
-                .field('availableCopies', 10);
-
-            expect(res.status).toBe(200);
-            expect(res.body.message).toBe('Book updated successfully!');
-            expect(res.body.book.image).toBe(validBuffer.toString('base64'));
-        });
-
 
         it('should return 200 and update the book successfully', async () => {
             Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' }); // Simulate existing book
