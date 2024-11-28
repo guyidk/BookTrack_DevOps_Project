@@ -7,8 +7,7 @@ describe('Update Book Frontend', () => {
     });
   });
   after(() => {
-    // Stop the server and disconnect Mongoose
-    return cy.task('stopServer').then(() => cy.task('disconnectMongoose'));
+    return cy.task('stopServer'); // Stop the server after the report is done
   });
 
   it("should not preview the image and show an alert if the file size is too large", () => {
@@ -395,7 +394,7 @@ describe('Update Book Frontend', () => {
       body: { message: 'Invalid book ID format' },
     }).as('invalidBookIdFormat');
 
-    // Trigger the function
+    // Trigger the function 
     cy.window().invoke('getBookById', 'invalidFormatId');
 
     cy.wait('@invalidBookIdFormat');
@@ -404,6 +403,43 @@ describe('Update Book Frontend', () => {
     cy.on('window:alert', (text) => {
       expect(text).to.equal('Invalid book ID format. Please check the ID and try again.');
     });
+  });
+
+  it('should handle form submission correctly', () => {
+    cy.visit(baseUrl);
+
+    // Trigger the edit form for the first book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Fill in valid form inputs
+    cy.get('#editTitle').clear().type('Valid Book Title');
+    cy.get('#editAuthor').clear().type('Valid Author Name');
+    cy.get('#editIsbn').clear().type('978-3-16-148410-0');
+
+    // Stub the PUT request to simulate a successful update
+    cy.intercept('PUT', '/updateBook/*', {
+      statusCode: 200,
+      body: { message: 'Book updated successfully!' },
+    }).as('updateBook');
+
+    // Submit the form
+    cy.get('#editBookForm').submit();
+
+    // Confirm that the alert displays a success message
+    cy.on('window:alert', (text) => {
+      expect(text).to.equal('Book updated successfully!');
+    });
+
+    // Wait for the PUT request and confirm it was sent
+    cy.wait('@updateBook').then((interception) => {
+      expect(interception.response.statusCode).to.equal(200);
+    });
+
+    // Ensure the form and overlay are closed after submission
+    cy.get('#editFormContainer').should('not.be.visible');
+    cy.get('#edit-overlay').should('not.be.visible');
   });
 
 });
