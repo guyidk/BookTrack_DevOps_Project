@@ -7,7 +7,33 @@ describe('Update Book Frontend', () => {
     });
   });
   after(() => {
-    return cy.task('stopServer'); // Stop the server after the report is done
+    // Stop the server and disconnect Mongoose
+    return cy.task('stopServer').then(() => cy.task('disconnectMongoose'));
+  });
+  
+  
+  it("should not preview the image and show an alert if the file size is too large", () => {
+
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Ensure the form is visible
+    cy.get("#editFormContainer").should("be.visible");
+
+    // Stub an oversized file
+    const oversizedFile = "images/large-test-image.jpg";
+
+    // Spy on the window alert
+    cy.window().then((win) => {
+      cy.spy(win, "alert");
+    });
+
+    // Simulate selecting an oversized file
+    cy.get("#editImage").attachFile(oversizedFile);
+
+    // Check that the alert was called with the correct message
+    cy.window().its("alert").should("be.calledWith", "Image size should not exceed 16MB. Please select a smaller file.");
   });
 
   it('should display an alert if there is an error while fetching book details for editing', () => {
@@ -15,28 +41,28 @@ describe('Update Book Frontend', () => {
     cy.intercept('GET', '/books/*', {
       forceNetworkError: true,
     }).as('fetchBookDetailsError');
-  
+
     // Visit the base URL
     cy.visit(baseUrl);
-  
+
     // Attempt to open the edit form for the first book
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
     });
-  
+
     // Wait for the intercepted request to fail
     cy.wait('@fetchBookDetailsError');
-  
+
     // Validate the error handling with console logs and alerts
     cy.on('window:alert', (alertText) => {
       expect(alertText).to.contains('An error occurred while fetching the book details.');
     });
-  
+
     // Optionally, check if the console error message was logged
     cy.window().then((win) => {
       cy.stub(win.console, 'error').as('consoleError');
     });
-  
+
     // Ensure the console error was logged
     cy.get('@consoleError').should(
       'have.been.calledWith',
@@ -50,18 +76,18 @@ describe('Update Book Frontend', () => {
       statusCode: 500,
       body: { message: 'Internal Server Error' },
     }).as('fetchBookDetailsError');
-  
+
     // Visit the base URL
     cy.visit(baseUrl);
-  
+
     // Attempt to open the edit form for the first book
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
     });
-  
+
     // Wait for the intercepted request to be triggered
     cy.wait('@fetchBookDetailsError');
-  
+
     // Verify the alert message
     cy.on('window:alert', (text) => {
       expect(text).to.contains('Failed to fetch book details for editing.');
