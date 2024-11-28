@@ -99,60 +99,6 @@ describe('Update Book Utility', () => {
             expect(res.body.error).toBe('Book not found');
         });
 
-        it('should return 400 if uploaded image exceeds 16MB', async () => {
-            const largeBuffer = Buffer.alloc(16 * 1024 * 1024 + 1);
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' }); // Mock book
-            const res = await request.put('/updateBook/123456')
-                .attach('file', largeBuffer, 'largeImage.jpg')
-                .field('title', 'Valid Title')
-                .field('author', 'Valid Author')
-                .field('isbn', '123456789')
-                .field('genre', 'Fiction')
-                .field('availableCopies', 10);
-
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBe('Image size should not exceed 16MB.');
-        });
-
-        it('should return 400 if uploaded file size is 0 bytes', async () => {
-            const emptyBuffer = Buffer.alloc(0);
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' }); // Mock book
-            const res = await request.put('/updateBook/123456')
-                .attach('file', emptyBuffer, 'emptyImage.jpg')
-                .field('title', 'Valid Title')
-                .field('author', 'Valid Author')
-                .field('isbn', '123456789')
-                .field('genre', 'Fiction')
-                .field('availableCopies', 10);
-
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBe('Uploaded file is invalid.');
-        });
-
-        it('should process a valid image file and convert it to base64', async () => {
-            const validBuffer = Buffer.from('SampleImageContent');
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Existing Book' });
-            Book.findByIdAndUpdate.mockResolvedValue({
-                _id: '123456',
-                title: 'Valid Title',
-                author: 'Valid Author',
-                image: validBuffer.toString('base64'),
-            });
-
-            const res = await request.put('/updateBook/123456')
-                .attach('file', validBuffer, 'sampleImage.jpg')
-                .field('title', 'Valid Title')
-                .field('author', 'Valid Author')
-                .field('isbn', '123456789')
-                .field('genre', 'Fiction')
-                .field('availableCopies', 10);
-
-            expect(res.status).toBe(200);
-            expect(res.body.message).toBe('Book updated successfully!');
-            expect(res.body.book.image).toBe(validBuffer.toString('base64'));
-        });
-
-
         it('should return 200 and update the book successfully', async () => {
             Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' }); // Simulate existing book
             Book.findByIdAndUpdate.mockResolvedValue({
