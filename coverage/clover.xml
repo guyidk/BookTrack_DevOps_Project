@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1732776814845" clover="3.2.0">
-  <project timestamp="1732776814845" name="All files">
+<coverage generated="1732780580322" clover="3.2.0">
+  <project timestamp="1732780580322" name="All files">
     <metrics statements="297" coveredstatements="119" conditionals="136" coveredconditionals="60" methods="34" coveredmethods="13" elements="467" coveredelements="192" complexity="0" loc="297" ncloc="297" packages="1" files="5" classes="5"/>
     <file name="add-book.js" path="C:\My_stuff\TP\Year_2_Semester_2\DevOps\DevOps_Project_Part_2\BookTrack_DevOps_Project\public\js\add-book.js">
       <metrics statements="73" coveredstatements="3" conditionals="28" coveredconditionals="0" methods="5" coveredmethods="1"/>
@@ -125,15 +125,15 @@
     </file>
     <file name="get-book.js" path="C:\My_stuff\TP\Year_2_Semester_2\DevOps\DevOps_Project_Part_2\BookTrack_DevOps_Project\public\js\get-book.js">
       <metrics statements="31" coveredstatements="18" conditionals="17" coveredconditionals="12" methods="4" coveredmethods="3"/>
-      <line num="3" count="22" type="stmt"/>
-      <line num="6" count="22" type="stmt"/>
-      <line num="9" count="22" type="stmt"/>
-      <line num="12" count="22" type="stmt"/>
-      <line num="14" count="18" type="stmt"/>
-      <line num="17" count="18" type="cond" truecount="3" falsecount="1"/>
-      <line num="18" count="18" type="stmt"/>
-      <line num="20" count="18" type="stmt"/>
-      <line num="21" count="18" type="stmt"/>
+      <line num="3" count="21" type="stmt"/>
+      <line num="6" count="21" type="stmt"/>
+      <line num="9" count="21" type="stmt"/>
+      <line num="12" count="21" type="stmt"/>
+      <line num="14" count="17" type="stmt"/>
+      <line num="17" count="17" type="cond" truecount="3" falsecount="1"/>
+      <line num="18" count="17" type="stmt"/>
+      <line num="20" count="17" type="stmt"/>
+      <line num="21" count="17" type="stmt"/>
       <line num="24" count="0" type="stmt"/>
       <line num="25" count="0" type="stmt"/>
       <line num="29" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -141,21 +141,21 @@
       <line num="31" count="0" type="stmt"/>
       <line num="35" count="0" type="stmt"/>
       <line num="36" count="0" type="stmt"/>
-      <line num="41" count="22" type="stmt"/>
+      <line num="41" count="21" type="stmt"/>
       <line num="43" count="0" type="stmt"/>
       <line num="46" count="0" type="stmt"/>
       <line num="47" count="0" type="stmt"/>
-      <line num="51" count="22" type="stmt"/>
-      <line num="58" count="18" type="stmt"/>
-      <line num="61" count="18" type="cond" truecount="3" falsecount="1"/>
+      <line num="51" count="21" type="stmt"/>
+      <line num="58" count="17" type="stmt"/>
+      <line num="61" count="17" type="cond" truecount="3" falsecount="1"/>
       <line num="62" count="0" type="stmt"/>
       <line num="63" count="0" type="stmt"/>
-      <line num="66" count="18" type="stmt"/>
-      <line num="69" count="18" type="stmt"/>
-      <line num="71" count="18" type="cond" truecount="6" falsecount="1"/>
-      <line num="72" count="18" type="stmt"/>
+      <line num="66" count="17" type="stmt"/>
+      <line num="69" count="17" type="stmt"/>
+      <line num="71" count="17" type="cond" truecount="6" falsecount="1"/>
+      <line num="72" count="17" type="stmt"/>
       <line num="87" count="0" type="stmt"/>
-      <line num="91" count="18" type="stmt"/>
+      <line num="91" count="17" type="stmt"/>
     </file>
     <file name="search-books.js" path="C:\My_stuff\TP\Year_2_Semester_2\DevOps\DevOps_Project_Part_2\BookTrack_DevOps_Project\public\js\search-books.js">
       <metrics statements="38" coveredstatements="0" conditionals="16" coveredconditionals="0" methods="6" coveredmethods="0"/>
@@ -200,11 +200,11 @@
     </file>
     <file name="update-book.js" path="C:\My_stuff\TP\Year_2_Semester_2\DevOps\DevOps_Project_Part_2\BookTrack_DevOps_Project\public\js\update-book.js">
       <metrics statements="113" coveredstatements="98" conditionals="53" coveredconditionals="48" methods="11" coveredmethods="9"/>
-      <line num="3" count="2" type="stmt"/>
-      <line num="4" count="2" type="stmt"/>
+      <line num="3" count="1" type="stmt"/>
+      <line num="4" count="1" type="stmt"/>
       <line num="9" count="6" type="stmt"/>
-      <line num="10" count="4" type="stmt"/>
-      <line num="12" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="10" count="3" type="stmt"/>
+      <line num="12" count="3" type="cond" truecount="2" falsecount="0"/>
       <line num="18" count="11" type="stmt"/>
       <line num="21" count="11" type="cond" truecount="2" falsecount="0"/>
       <line num="22" count="5" type="stmt"/>
@@ -277,18 +277,18 @@
       <line num="135" count="5" type="stmt"/>
       <line num="136" count="5" type="stmt"/>
       <line num="140" count="6" type="stmt"/>
-      <line num="141" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="141" count="3" type="cond" truecount="2" falsecount="0"/>
       <line num="142" count="1" type="stmt"/>
       <line num="143" count="1" type="stmt"/>
-      <line num="146" count="3" type="stmt"/>
-      <line num="147" count="3" type="cond" truecount="1" falsecount="1"/>
+      <line num="146" count="2" type="stmt"/>
+      <line num="147" count="2" type="cond" truecount="1" falsecount="1"/>
       <line num="148" count="0" type="stmt"/>
-      <line num="151" count="3" type="stmt"/>
-      <line num="152" count="3" type="stmt"/>
-      <line num="157" count="3" type="cond" truecount="2" falsecount="0"/>
-      <line num="158" count="2" type="stmt"/>
-      <line num="159" count="2" type="stmt"/>
-      <line num="160" count="2" type="stmt"/>
+      <line num="151" count="2" type="stmt"/>
+      <line num="152" count="2" type="stmt"/>
+      <line num="157" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="158" count="1" type="stmt"/>
+      <line num="159" count="1" type="stmt"/>
+      <line num="160" count="1" type="stmt"/>
       <line num="162" count="1" type="stmt"/>
       <line num="165" count="0" type="stmt"/>
       <line num="166" count="0" type="stmt"/>
