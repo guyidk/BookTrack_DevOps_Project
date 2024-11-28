@@ -10,8 +10,7 @@ describe('Update Book Frontend', () => {
     // Stop the server and disconnect Mongoose
     return cy.task('stopServer').then(() => cy.task('disconnectMongoose'));
   });
-  
-  
+
   it("should not preview the image and show an alert if the file size is too large", () => {
 
     cy.get('.book-card').first().within(() => {
@@ -352,6 +351,58 @@ describe('Update Book Frontend', () => {
 
     cy.on('window:alert', (text) => {
       expect(text).to.contains('Book updated successfully!');
+    });
+  });
+
+  it('should alert for invalid bookId', () => {
+    cy.visit(baseUrl);
+    // Spy on the alert
+    cy.window().then((win) => {
+      cy.spy(win, 'alert');
+    });
+
+    // Trigger the function with an invalid bookId
+    cy.window().invoke('getBookById', '');
+
+    // Validate the alert was called with the expected message
+    cy.window().its('alert').should('be.calledWith', 'Invalid book ID. Please provide a valid ID.');
+  });
+
+  it('should alert when the book is not found (404)', () => {
+    cy.visit(baseUrl);
+
+    cy.intercept('GET', '/books/*', {
+      statusCode: 404,
+      body: { message: 'Book not found' },
+    }).as('bookNotFound');
+
+    // Trigger the function
+    cy.window().invoke('getBookById', 'nonexistentBookId');
+
+    cy.wait('@bookNotFound');
+
+    // Check the alert message
+    cy.on('window:alert', (text) => {
+      expect(text).to.equal('Book not found. It may have been removed.');
+    });
+  });
+
+  it('should alert when the bookId format is invalid (400)', () => {
+    cy.visit(baseUrl);
+
+    cy.intercept('GET', '/books/*', {
+      statusCode: 400,
+      body: { message: 'Invalid book ID format' },
+    }).as('invalidBookIdFormat');
+
+    // Trigger the function
+    cy.window().invoke('getBookById', 'invalidFormatId');
+
+    cy.wait('@invalidBookIdFormat');
+
+    // Check the alert message
+    cy.on('window:alert', (text) => {
+      expect(text).to.equal('Invalid book ID format. Please check the ID and try again.');
     });
   });
 
