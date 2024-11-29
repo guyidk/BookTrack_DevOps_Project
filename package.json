@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest",
     "frontend-instrument": "xcopy public instrumented /I /E /Y & nyc instrument public instrumented",
-    "frontend-test": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run",
+    "frontend-test-electron": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run",
+    "frontend-test-chrome": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run --browser chrome",
+    "frontend-test-edge": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run --browser edge",
     "start": "nodemon index.js"
   },
   "keywords": [],

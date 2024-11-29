@@ -23,7 +23,7 @@ jobs:
         
       - name: Run tests in "test" folder
         run: npm test
-        
+  
       - name: Instrument the frontend code
         run: cp -R public instrumented & npx nyc instrument public instrumented
         
