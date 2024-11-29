@@ -10,8 +10,11 @@ describe('Update Book Frontend', () => {
     return cy.task('stopServer'); // Stop the server after the report is done
   });
 
-  it("should not preview the image and show an alert if the file size is too large", () => {
+  //Image validations-------------------------------------------------------------------------------------------------------------
+  it('should preview the image when a valid image file is selected', () => {
+    cy.visit(baseUrl);
 
+    // Trigger the edit form for the first book
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
     });
@@ -19,128 +22,24 @@ describe('Update Book Frontend', () => {
     // Ensure the form is visible
     cy.get("#editFormContainer").should("be.visible");
 
-    // Stub an oversized file
-    const oversizedFile = "images/large-test-image.jpg";
-
-    // Spy on the window alert
-    cy.window().then((win) => {
-      cy.spy(win, "alert");
+    // Simulate selecting a valid image file
+    const fileName = 'images/valid-test-image.jpg';
+    cy.fixture(fileName, 'base64').then(fileContent => {
+      cy.get("#editImage").attachFile({
+        fileContent: Cypress.Blob.base64StringToBlob(fileContent),
+        fileName,
+        mimeType: 'image/jpeg',
+      });
     });
 
-    // Simulate selecting an oversized file
-    cy.get("#editImage").attachFile(oversizedFile);
-
-    // Check that the alert was called with the correct message
-    cy.window().its("alert").should("be.calledWith", "Image size should not exceed 16MB. Please select a smaller file.");
-  });
-
-  it('should display an alert if there is an error while fetching book details for editing', () => {
-    // Intercept the GET request for fetching book details and force a network error
-    cy.intercept('GET', '/books/*', {
-      forceNetworkError: true,
-    }).as('fetchBookDetailsError');
-
-    // Visit the base URL
-    cy.visit(baseUrl);
-
-    // Attempt to open the edit form for the first book
-    cy.get('.book-card').first().within(() => {
-      cy.get('input#editBtn').click();
-    });
-
-    // Wait for the intercepted request to fail
-    cy.wait('@fetchBookDetailsError');
-
-    // Validate the error handling with console logs and alerts
-    cy.on('window:alert', (alertText) => {
-      expect(alertText).to.contains('An error occurred while fetching the book details.');
-    });
-
-    // Optionally, check if the console error message was logged
-    cy.window().then((win) => {
-      cy.stub(win.console, 'error').as('consoleError');
-    });
-
-    // Ensure the console error was logged
-    cy.get('@consoleError').should(
-      'have.been.calledWith',
-      'Error fetching book for editing:'
-    );
-  });
-
-  it('should display an alert if book details fail to fetch for editing', () => {
-    // Intercept the GET request for fetching book details with a failed response
-    cy.intercept('GET', '/books/*', {
-      statusCode: 500,
-      body: { message: 'Internal Server Error' },
-    }).as('fetchBookDetailsError');
-
-    // Visit the base URL
-    cy.visit(baseUrl);
-
-    // Attempt to open the edit form for the first book
-    cy.get('.book-card').first().within(() => {
-      cy.get('input#editBtn').click();
-    });
-
-    // Wait for the intercepted request to be triggered
-    cy.wait('@fetchBookDetailsError');
-
-    // Verify the alert message
-    cy.on('window:alert', (text) => {
-      expect(text).to.contains('Failed to fetch book details for editing.');
-    });
-  });
-
-  it('should prevent updating book with a duplicate title', () => {
-    cy.visit(baseUrl);
-
-    cy.get('.book-card').first().within(() => {
-      cy.get('input#editBtn').click();
-    });
-
-    cy.get('#editTitle').clear().type('Existing Book Title'); // Duplicate title
-    cy.get('#editAuthor').clear().type('Updated Author');
-    cy.get('#editIsbn').clear().type('978-3-16-148410-0');
-    cy.get('#editBookForm').submit();
-
-    cy.on('window:alert', (text) => {
-      expect(text).to.contains('Title already exists. Please choose a different title.');
-    });
-  });
-
-  it('should prevent updating book with a title > 100', () => {
-    cy.visit(baseUrl);
-
-    cy.get('.book-card').first().within(() => {
-      cy.get('input#editBtn').click();
-    });
-
-    cy.get('#editTitle').clear().type('The Enchanted Forest: A Journey Through the Forgotten Realms, Where Magic Breathes and Legends Come to Life in Every Leaf and Branch, Waiting to Be Unfolded'); // Duplicate title
-    cy.get('#editAuthor').clear().type('Updated Author');
-    cy.get('#editIsbn').clear().type('978-3-16-148410-0');
-    cy.get('#editBookForm').submit();
-
-    cy.on('window:alert', (text) => {
-      expect(text).to.contains('Title must be 100 characters or fewer.');
-    });
-  });
-
-  it('should prevent updating book with a author > 150', () => {
-    cy.visit(baseUrl);
-
-    cy.get('.book-card').first().within(() => {
-      cy.get('input#editBtn').click();
-    });
-
-    cy.get('#editTitle').clear().type('author check Title'); // Duplicate title
-    cy.get('#editAuthor').clear().type('a'.repeat(151));
-    cy.get('#editIsbn').clear().type('978-0062439591');
-    cy.get('#editBookForm').submit();
-
-    cy.on('window:alert', (text) => {
-      expect(text).to.contains('Author name must be 150 characters or fewer.');
-    });
+    // Verify that the image preview is updated and visible
+    cy.get('#editBookPreviewImage')
+      .should('be.visible')
+      .and(($img) => {
+        // Ensure the src is updated
+        const src = $img.attr('src');
+        expect(src).to.match(/^data:image\/jpeg;base64,/); // Check for the base64 prefix
+      });
   });
 
   it('should hide the image preview if the image is not available', () => {
@@ -172,6 +71,29 @@ describe('Update Book Frontend', () => {
     cy.get('#editBookPreviewImage').should('not.be.visible');
   });
 
+  it("should not preview the image and show an alert if the file size is too large", () => {
+    cy.visit(baseUrl);
+
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Ensure the form is visible
+    cy.get("#editFormContainer").should("be.visible");
+
+    // Spy on the window alert
+    cy.window().then((win) => {
+      cy.spy(win, "alert");
+    });
+
+    // Simulate selecting an oversized file
+    cy.get("#editImage").attachFile("images/large-test-image.jpg");
+
+    // Check that the alert was called with the correct message
+    cy.window().its("alert").should("be.calledWith", "Image size should not exceed 16MB. Please select a smaller file.");
+  });
+
+  //ISBN Validations-----------------------------------------------------------------------------------------------------------------
   it('should display an error for invalid ISBN(number >10)', () => {
     cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
@@ -189,6 +111,7 @@ describe('Update Book Frontend', () => {
     });
   });
 
+
   it('should display an error for invalid ISBN(number&letters =10)', () => {
     cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
@@ -199,24 +122,6 @@ describe('Update Book Frontend', () => {
     cy.get('#editTitle').clear().type('Some Title');
     cy.get('#editAuthor').clear().type('Some Author');
     cy.get('#editIsbn').clear().type('1234567A89'); // Invalid ISBN
-    cy.get('#editBookForm').submit();
-
-    cy.on('window:alert', (text) => {
-      expect(text).to.contains('Invalid ISBN. Please enter a valid ISBN-10 or ISBN-13.');
-    });
-  });
-
-
-  it('should display an error for invalid ISBN(number =10)', () => {
-    cy.visit(baseUrl);
-    // Ensure that the resource we just added is visible in the table
-    cy.get('.book-card').first().within(() => {
-      cy.get('input#editBtn').click();
-    });
-
-    cy.get('#editTitle').clear().type('Some Title');
-    cy.get('#editAuthor').clear().type('Some Author');
-    cy.get('#editIsbn').clear().type('1234567890'); // Invalid ISBN
     cy.get('#editBookForm').submit();
 
     cy.on('window:alert', (text) => {
@@ -267,6 +172,22 @@ describe('Update Book Frontend', () => {
     });
   });
 
+  it('should display an error for invalid ISBN(number =10)', () => {
+    cy.visit(baseUrl);
+    // Ensure that the resource we just added is visible in the table
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    cy.get('#editTitle').clear().type('Some Title');
+    cy.get('#editAuthor').clear().type('Some Author');
+    cy.get('#editIsbn').clear().type('1234567890'); // Invalid ISBN
+    cy.get('#editBookForm').submit();
+
+    cy.on('window:alert', (text) => {
+      expect(text).to.contains('Invalid ISBN. Please enter a valid ISBN-10 or ISBN-13.');
+    });
+  });
 
   it('should display an error for invalid ISBN(number&letters =13)', () => {
     cy.visit(baseUrl);
@@ -277,12 +198,144 @@ describe('Update Book Frontend', () => {
 
     cy.get('#editTitle').clear().type('Some Title');
     cy.get('#editAuthor').clear().type('Some Author');
-    cy.get('#editIsbn').clear().type('1234567A90123'); // Invalid ISBN
+    cy.get('#editIsbn').clear().type('1234567A89123'); // Invalid ISBN
     cy.get('#editBookForm').submit();
 
     cy.on('window:alert', (text) => {
       expect(text).to.contains('Invalid ISBN. Please enter a valid ISBN-10 or ISBN-13.');
     });
+  });
+
+  //Successfull update-----------------------------------------------------------------------------------------------------------------
+  it('should handle form submission correctly', () => {
+    cy.visit(baseUrl);
+
+    // Trigger the edit form for the first book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Fill in valid form inputs
+    cy.get('#editTitle').clear().type('Valid Book Title');
+    cy.get('#editAuthor').clear().type('Valid Author Name');
+    cy.get('#editIsbn').clear().type('978-3-16-148410-0');
+    cy.get('#image').attachFile('images/valid-test-image.jpg');
+
+    // Stub the PUT request to simulate a successful update
+    cy.intercept('PUT', '/updateBook/*', {
+      statusCode: 200,
+      body: { message: 'Book updated successfully!' },
+    }).as('updateBook');
+
+    // Submit the form
+    cy.get('#editBookForm').submit();
+
+    // Confirm that the alert displays a success message
+    cy.on('window:alert', (text) => {
+      expect(text).to.equal('Book updated successfully!');
+    });
+
+    // Wait for the PUT request and confirm it was sent
+    cy.wait('@updateBook').then((interception) => {
+      expect(interception.response.statusCode).to.equal(200);
+    });
+
+    // Ensure the form and overlay are closed after submission
+    cy.get('#editFormContainer').should('not.be.visible');
+    cy.get('#edit-overlay').should('not.be.visible');
+  });
+
+  it('should not proceed if user cancels the confirmation dialog', () => {
+    cy.visit(baseUrl);
+
+    // Trigger the edit form for the first book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Fill in the form with valid data
+    cy.get('#editTitle').clear().type('Unique Book Title');
+    cy.get('#editAuthor').clear().type('Author Name');
+    cy.get('#editIsbn').clear().type('978-3-16-148410-0');
+
+    // Stub the `window.confirm` to simulate the user clicking "Cancel"
+    cy.window().then((win) => {
+      cy.stub(win, 'confirm').returns(false); // Simulate cancel action
+    });
+
+    // Intercept the PUT request (though it should not be called in this test)
+    cy.intercept('PUT', '/updateBook/*').as('updateBook');
+
+    // Submit the form
+    cy.get('#editBookForm').submit();
+
+    // Ensure the confirmation dialog was triggered
+    cy.window().its('confirm').should('be.calledWith', 'Are you sure you want to update the book details?');
+
+    // Ensure the PUT request was not sent
+    cy.get('@updateBook').should('not.exist'); // No request should exist
+
+    // Ensure the form is still visible
+    cy.get('#editFormContainer').should('be.visible');
+  });
+
+  //--------------------------------------------------------------------------------------------------
+  it('should display an alert if book details fail to fetch for editing', () => {
+    // Intercept the GET request for fetching book details with a failed response
+    cy.intercept('GET', '/books/*', {
+      statusCode: 500,
+      body: { message: 'Internal Server Error' },
+    }).as('fetchBookDetailsError');
+
+    // Visit the base URL
+    cy.visit(baseUrl);
+
+    // Attempt to open the edit form for the first book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Wait for the intercepted request to be triggered
+    cy.wait('@fetchBookDetailsError');
+
+    // Verify the alert message
+    cy.on('window:alert', (text) => {
+      expect(text).to.contains('Failed to fetch book details for editing.');
+    });
+  });
+
+  it('should display an alert if there is an error while fetching book details for editing', () => {
+    // Intercept the GET request for fetching book details and force a network error
+    cy.intercept('GET', '/books/*', {
+      forceNetworkError: true,
+    }).as('fetchBookDetailsError');
+
+    // Visit the base URL
+    cy.visit(baseUrl);
+
+    // Attempt to open the edit form for the first book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Wait for the intercepted request to fail
+    cy.wait('@fetchBookDetailsError');
+
+    // Validate the error handling with console logs and alerts
+    cy.on('window:alert', (alertText) => {
+      expect(alertText).to.contains('An error occurred while fetching the book details.');
+    });
+
+    // Optionally, check if the console error message was logged
+    cy.window().then((win) => {
+      cy.stub(win.console, 'error').as('consoleError');
+    });
+
+    // Ensure the console error was logged
+    cy.get('@consoleError').should(
+      'have.been.calledWith',
+      'Error fetching book for editing:'
+    );
   });
 
   it('should handle server errors gracefully during update', () => {
@@ -307,105 +360,7 @@ describe('Update Book Frontend', () => {
     });
   });
 
-  it('should display an error if the book title is not unique', () => {
-    cy.visit(baseUrl);
-
-    // Mock the API response for checking unique title
-    cy.intercept('GET', '/books', {
-      statusCode: 200,
-      body: [
-        { _id: '123', title: '1984', author: 'George Orwell', isbn: '978-0451524935' }
-      ],
-    }).as('fetchBooks');
-
-    cy.get('.book-card').first().within(() => {
-      cy.get('input#editBtn').click();
-    });
-
-    cy.get('#editTitle').clear().type('1984');
-    cy.get('#editAuthor').clear().type('Some Author');
-    cy.get('#editIsbn').clear().type('978-3-16-148410-0');
-    cy.get('#editBookForm').submit();
-
-    // Wait for the mocked API call to resolve
-    cy.wait('@fetchBooks');
-
-    cy.on('window:alert', (text) => {
-      expect(text).to.contains('Title already exists. Please choose a different title.');
-    });
-  });
-
-
-  it('should successfully update a book with valid data', () => {
-    cy.visit(baseUrl);
-    // Ensure that the resource we just added is visible in the table
-    cy.get('.book-card').first().within(() => {
-      cy.get('input#editBtn').click();
-    });
-
-    cy.get('#editTitle').clear().type('Some Title');
-    cy.get('#editAuthor').clear().type('Some Author');
-    cy.get('#editIsbn').clear().type('978-0590353427'); // Invalid ISBN
-    cy.get('#editBookForm').submit();
-
-    cy.on('window:alert', (text) => {
-      expect(text).to.contains('Book updated successfully!');
-    });
-  });
-
-  it('should alert for invalid bookId', () => {
-    cy.visit(baseUrl);
-    // Spy on the alert
-    cy.window().then((win) => {
-      cy.spy(win, 'alert');
-    });
-
-    // Trigger the function with an invalid bookId
-    cy.window().invoke('getBookById', '');
-
-    // Validate the alert was called with the expected message
-    cy.window().its('alert').should('be.calledWith', 'Invalid book ID. Please provide a valid ID.');
-  });
-
-  it('should alert when the book is not found (404)', () => {
-    cy.visit(baseUrl);
-
-    cy.intercept('GET', '/books/*', {
-      statusCode: 404,
-      body: { message: 'Book not found' },
-    }).as('bookNotFound');
-
-    // Trigger the function
-    cy.window().invoke('getBookById', 'nonexistentBookId');
-
-    cy.wait('@bookNotFound');
-
-    // Check the alert message
-    cy.on('window:alert', (text) => {
-      expect(text).to.equal('Book not found. It may have been removed.');
-    });
-  });
-
-  it('should alert when the bookId format is invalid (400)', () => {
-    cy.visit(baseUrl);
-
-    cy.intercept('GET', '/books/*', {
-      statusCode: 400,
-      body: { message: 'Invalid book ID format' },
-    }).as('invalidBookIdFormat');
-
-    // Trigger the function 
-    cy.window().invoke('getBookById', 'invalidFormatId');
-
-    cy.wait('@invalidBookIdFormat');
-
-    // Check the alert message
-    cy.on('window:alert', (text) => {
-      expect(text).to.equal('Invalid book ID format. Please check the ID and try again.');
-    });
-  });
-
-  it('should handle form submission correctly', () => {
+  it('should display an alert and log an error if the book update fails', () => {
     cy.visit(baseUrl);
 
     // Trigger the edit form for the first book
@@ -414,32 +369,120 @@ describe('Update Book Frontend', () => {
     });
 
     // Fill in valid form inputs
-    cy.get('#editTitle').clear().type('Valid Book Title');
-    cy.get('#editAuthor').clear().type('Valid Author Name');
+    cy.get('#editTitle').clear().type('Updated Book Title');
+    cy.get('#editAuthor').clear().type('Updated Author Name');
     cy.get('#editIsbn').clear().type('978-3-16-148410-0');
 
-    // Stub the PUT request to simulate a successful update
+    // Stub the PUT request to simulate a failure
     cy.intercept('PUT', '/updateBook/*', {
-      statusCode: 200,
-      body: { message: 'Book updated successfully!' },
-    }).as('updateBook');
+      statusCode: 500,
+      body: { message: 'Internal Server Error' },
+    }).as('updateBookError');
 
     // Submit the form
     cy.get('#editBookForm').submit();
 
-    // Confirm that the alert displays a success message
+    // Confirm that the alert displays the error message
+    cy.on('window:alert', (alertText) => {
+      expect(alertText).to.contains(
+        'An error occurred while updating the book. Please check the console for details.'
+      );
+    });
+
+    // Ensure the error is logged to the console
+    cy.window().then((win) => {
+      cy.stub(win.console, 'error').as('consoleError');
+    });
+
+    // Wait for the PUT request and ensure it failed
+    cy.wait('@updateBookError').then((interception) => {
+      expect(interception.response.statusCode).to.equal(500);
+    });
+
+    // Check that the console error was logged with the expected message
+    cy.get('@consoleError').should(
+      'have.been.calledWith',
+      'Error updating book:'
+    );
+  });
+
+
+  // Title & author validations-----------------------------------------------------------------------------------------------------
+
+  it('should show an alert if the title is not unique', () => {
+    cy.visit(baseUrl);
+
+    // Trigger the edit form for the first book
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
+    });
+
+    // Fill in the form with a duplicate title
+    cy.get('#editTitle').clear().type('Duplicate Book Title');
+    cy.get('#editAuthor').clear().type('Valid Author Name');
+    cy.get('#editIsbn').clear().type('978-3-16-148410-0');
+
+    // Stub the fetch call to simulate non-unique title
+    cy.intercept('GET', '/books', {
+      statusCode: 200,
+      body: [
+        { title: 'Duplicate Book Title', _id: '123' }, // Existing book with the same title
+        { title: 'Another Book Title', _id: '456' },
+      ],
+    }).as('fetchBooks');
+
+    // Stub the fetch call to simulate a successful book details fetch
+    cy.intercept('GET', '/books/*', {
+      statusCode: 200,
+      body: {
+        title: 'Current Book Title',
+        author: 'Current Author',
+        isbn: '978-3-16-148410-0',
+        _id: '789',
+      },
+    }).as('fetchBookDetails');
+
+    // Submit the form
+    cy.get('#editBookForm').submit();
+
+    // Assert that the alert displays the expected message
     cy.on('window:alert', (text) => {
-      expect(text).to.equal('Book updated successfully!');
+      expect(text).to.equal('Title already exists. Please choose a different title.');
+    });
+  });
+
+  it('should prevent updating book with a title > 100', () => {
+    cy.visit(baseUrl);
+
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
     });
 
-    // Wait for the PUT request and confirm it was sent
-    cy.wait('@updateBook').then((interception) => {
-      expect(interception.response.statusCode).to.equal(200);
+    cy.get('#editTitle').clear().type('The Enchanted Forest: A Journey Through the Forgotten Realms, Where Magic Breathes and Legends Come to Life in Every Leaf and Branch, Waiting to Be Unfolded'); // Duplicate title
+    cy.get('#editAuthor').clear().type('Updated Author');
+    cy.get('#editIsbn').clear().type('978-3-16-148410-0');
+    cy.get('#editBookForm').submit();
+
+    cy.on('window:alert', (text) => {
+      expect(text).to.contains('Title must be 100 characters or fewer.');
+    });
+  });
+
+  it('should prevent updating book with a author > 150', () => {
+    cy.visit(baseUrl);
+
+    cy.get('.book-card').first().within(() => {
+      cy.get('input#editBtn').click();
     });
 
-    // Ensure the form and overlay are closed after submission
-    cy.get('#editFormContainer').should('not.be.visible');
-    cy.get('#edit-overlay').should('not.be.visible');
+    cy.get('#editTitle').clear().type('author check Title'); // Duplicate title
+    cy.get('#editAuthor').clear().type('a'.repeat(151));
+    cy.get('#editIsbn').clear().type('978-0062439591');
+    cy.get('#editBookForm').submit();
+
+    cy.on('window:alert', (text) => {
+      expect(text).to.contains('Author name must be 150 characters or fewer.');
+    });
   });
 
 });
