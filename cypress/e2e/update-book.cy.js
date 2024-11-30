@@ -8,10 +8,13 @@ describe('Update Book Frontend', () => {
   after(() => {
     return cy.task('stopServer'); // Stop the server after the report is done
   });
+  // Visit the application before each test
+  beforeEach(() => {
+    cy.visit(baseUrl); // Ensure the app starts fresh for each test
+  });
 
   //Image validations-------------------------------------------------------------------------------------------------------------
   it('should preview the image when a valid image file is selected', () => {
-    cy.visit(baseUrl);
 
     // Trigger the edit form for the first book
     cy.get('.book-card').first().within(() => {
@@ -42,8 +45,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should hide the image preview if the image is not available', () => {
-    cy.visit(baseUrl);
-
     // Mock the book details API response to exclude the image
     cy.intercept('GET', '/books/*', {
       statusCode: 200,
@@ -71,7 +72,6 @@ describe('Update Book Frontend', () => {
   });
 
   it("should not preview the image and show an alert if the file size is too large", () => {
-    cy.visit(baseUrl);
 
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -94,7 +94,6 @@ describe('Update Book Frontend', () => {
 
   //ISBN Validations-----------------------------------------------------------------------------------------------------------------
   it('should display an error for ISBN that does not have either 10 or 13 digits exactly', () => {
-    cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -112,7 +111,6 @@ describe('Update Book Frontend', () => {
 
 
   it('should display an error for ISBN-10 containing both numbers and letters', () => {
-    cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -129,8 +127,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should accept valid ISBN with "X" as the checksum character', () => {
-    cy.visit(baseUrl);
-
     // Navigate to the edit form
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -152,8 +148,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should display an error for ISBN with invalid checksum character', () => {
-    cy.visit(baseUrl);
-
     // Navigate to the edit form
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -172,7 +166,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should display an error for ISBN with exactly 10 digits (invalid format)', () => {
-    cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -189,7 +182,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should display an error for ISBN-13 containing both numbers and letters', () => {
-    cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -207,7 +199,6 @@ describe('Update Book Frontend', () => {
 
   //Successfull update-----------------------------------------------------------------------------------------------------------------
   it('should handle form submission correctly', () => {
-    cy.visit(baseUrl);
 
     // Trigger the edit form for the first book
     cy.get('.book-card').first().within(() => {
@@ -245,7 +236,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should not proceed if user cancels the confirmation dialog', () => {
-    cy.visit(baseUrl);
 
     // Trigger the edit form for the first book
     cy.get('.book-card').first().within(() => {
@@ -279,9 +269,6 @@ describe('Update Book Frontend', () => {
       statusCode: 500,
       body: { message: 'Internal Server Error' },
     }).as('fetchBookDetailsError');
-
-    // Visit the base URL
-    cy.visit(baseUrl);
 
     // Attempt to open the edit form for the first book
     cy.get('.book-card').first().within(() => {
@@ -332,8 +319,6 @@ describe('Update Book Frontend', () => {
       body: { message: 'Internal Server Error' },
     }).as('updateBookError');
 
-    cy.visit(baseUrl);
-
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
     });
@@ -348,7 +333,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should display an alert and log an error if the book update fails', () => {
-    cy.visit(baseUrl);
 
     // Trigger the edit form for the first book
     cy.get('.book-card').first().within(() => {
@@ -397,8 +381,6 @@ describe('Update Book Frontend', () => {
   // Title & author validations-----------------------------------------------------------------------------------------------------
 
   it('should show an alert if the title is not unique', () => {
-    cy.visit(baseUrl);
-
     // Trigger the edit form for the first book
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -438,7 +420,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should prevent updating book with a title > 100', () => {
-    cy.visit(baseUrl);
 
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -455,7 +436,6 @@ describe('Update Book Frontend', () => {
   });
 
   it('should prevent updating book with a author > 150', () => {
-    cy.visit(baseUrl);
 
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
