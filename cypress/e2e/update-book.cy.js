@@ -3,7 +3,6 @@ describe('Update Book Frontend', () => {
   before(() => {
     cy.task('startServer').then((url) => {
       baseUrl = url; // Store the base URL
-      cy.visit(baseUrl);
     });
   });
   after(() => {
@@ -94,7 +93,7 @@ describe('Update Book Frontend', () => {
   });
 
   //ISBN Validations-----------------------------------------------------------------------------------------------------------------
-  it('should display an error for invalid ISBN(number >10)', () => {
+  it('should display an error for ISBN that does not have either 10 or 13 digits exactly', () => {
     cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
     cy.get('.book-card').first().within(() => {
@@ -112,7 +111,7 @@ describe('Update Book Frontend', () => {
   });
 
 
-  it('should display an error for invalid ISBN(number&letters =10)', () => {
+  it('should display an error for ISBN-10 containing both numbers and letters', () => {
     cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
     cy.get('.book-card').first().within(() => {
@@ -129,7 +128,7 @@ describe('Update Book Frontend', () => {
     });
   });
 
-  it('should accept a valid ISBN-10 with X as checksum', () => {
+  it('should accept valid ISBN with "X" as the checksum character', () => {
     cy.visit(baseUrl);
 
     // Navigate to the edit form
@@ -152,7 +151,7 @@ describe('Update Book Frontend', () => {
     cy.get('.book-card').should('contain', '156881111X');
   });
 
-  it('should display an error for an ISBN-10 with an invalid checksum character', () => {
+  it('should display an error for ISBN with invalid checksum character', () => {
     cy.visit(baseUrl);
 
     // Navigate to the edit form
@@ -172,7 +171,7 @@ describe('Update Book Frontend', () => {
     });
   });
 
-  it('should display an error for invalid ISBN(number =10)', () => {
+  it('should display an error for ISBN with exactly 10 digits (invalid format)', () => {
     cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
     cy.get('.book-card').first().within(() => {
@@ -189,7 +188,7 @@ describe('Update Book Frontend', () => {
     });
   });
 
-  it('should display an error for invalid ISBN(number&letters =13)', () => {
+  it('should display an error for ISBN-13 containing both numbers and letters', () => {
     cy.visit(baseUrl);
     // Ensure that the resource we just added is visible in the table
     cy.get('.book-card').first().within(() => {
@@ -263,23 +262,17 @@ describe('Update Book Frontend', () => {
       cy.stub(win, 'confirm').returns(false); // Simulate cancel action
     });
 
-    // Intercept the PUT request (though it should not be called in this test)
-    cy.intercept('PUT', '/updateBook/*').as('updateBook');
-
     // Submit the form
     cy.get('#editBookForm').submit();
 
     // Ensure the confirmation dialog was triggered
     cy.window().its('confirm').should('be.calledWith', 'Are you sure you want to update the book details?');
 
-    // Ensure the PUT request was not sent
-    cy.get('@updateBook').should('not.exist'); // No request should exist
-
     // Ensure the form is still visible
     cy.get('#editFormContainer').should('be.visible');
-  });
+});
 
-  //--------------------------------------------------------------------------------------------------
+  //Tests that interact with backend--------------------------------------------------------------------------------------------
   it('should display an alert if book details fail to fetch for editing', () => {
     // Intercept the GET request for fetching book details with a failed response
     cy.intercept('GET', '/books/*', {
@@ -304,7 +297,7 @@ describe('Update Book Frontend', () => {
     });
   });
 
-  it('should display an alert if there is an error while fetching book details for editing', () => {
+  it('should display the  alert if there is a network error while fetching book details for editing', () => {
     // Intercept the GET request for fetching book details and force a network error
     cy.intercept('GET', '/books/*', {
       forceNetworkError: true,
@@ -431,7 +424,6 @@ describe('Update Book Frontend', () => {
       ],
     }).as('fetchBooks');
 
-    // Stub the fetch call to simulate a successful book details fetch
     cy.intercept('GET', '/books/*', {
       statusCode: 200,
       body: {

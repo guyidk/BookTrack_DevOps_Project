@@ -1,7 +1,3 @@
-// Import the functions to test
-const { updateBook, fetchBookById } = require('../utils/update-book-util');
-
-
 const supertest = require('supertest'); // Import supertest to test HTTP requests
 const { app } = require('../index'); // Import Express app
 jest.mock('../models/book.js'); // Mock the Book model
