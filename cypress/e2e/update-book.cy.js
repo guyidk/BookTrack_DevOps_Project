@@ -47,7 +47,7 @@ describe('Update Book Frontend', () => {
     // Mock the book details API response to exclude the image
     cy.intercept('GET', '/books/*', {
       statusCode: 200,
-      body: {
+      body: { 
         _id: '123',
         title: 'Book Without Image',
         author: 'Author Name',
@@ -297,39 +297,33 @@ describe('Update Book Frontend', () => {
     });
   });
 
-  it('should display the  alert if there is a network error while fetching book details for editing', () => {
+  it('should display the alert if there is a network error while fetching book details for editing', () => {
     // Intercept the GET request for fetching book details and force a network error
-    cy.intercept('GET', '/books/*', {
-      forceNetworkError: true,
-    }).as('fetchBookDetailsError');
-
-    // Visit the base URL
-    cy.visit(baseUrl);
-
+    cy.intercept('GET', '/books/*', { forceNetworkError: true }).as('fetchBookDetailsError');
+  
+    // Visit the base URL and set up the console error stub
+    cy.visit(baseUrl).then((win) => {
+      cy.stub(win.console, 'error').as('consoleError');
+    });
+  
     // Attempt to open the edit form for the first book
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
     });
-
+  
     // Wait for the intercepted request to fail
     cy.wait('@fetchBookDetailsError');
-
-    // Validate the error handling with console logs and alerts
+  
+    // Validate the alert message
     cy.on('window:alert', (alertText) => {
       expect(alertText).to.contains('An error occurred while fetching the book details.');
     });
-
-    // Optionally, check if the console error message was logged
-    cy.window().then((win) => {
-      cy.stub(win.console, 'error').as('consoleError');
-    });
-
+  
     // Ensure the console error was logged
-    cy.get('@consoleError').should(
-      'have.been.calledWith',
-      'Error fetching book for editing:'
-    );
+    cy.get('@consoleError').should('be.called');
+    cy.get('@consoleError').invoke('getCall', 0).its('args.0').should('contain', 'Error fetching book for editing:');
   });
+  
 
   it('should handle server errors gracefully during update', () => {
     // Stub the PUT request to return a server error

@@ -36,7 +36,7 @@ module.exports = defineConfig({
             server.kill();
           }
           return null;
-        }
+        }, defaultCommandTimeout: 10000, // Increase timeout to 10 seconds
       });
       return config
     },
