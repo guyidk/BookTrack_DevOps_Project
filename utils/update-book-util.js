@@ -3,9 +3,6 @@ const Book = require('../models/book.js');
 // Import mongoose to validate object IDs
 const mongoose = require('mongoose'); 
 
-const multer = require('multer');
-const upload = multer(); // In-memory storage, adapt as needed
-
 // Define an asynchronous function to handle updating a book by ID
 async function updateBook(req, res) {
     try {
@@ -48,8 +45,6 @@ async function updateBook(req, res) {
             // Check if file size exceeds 16MB
             if (req.file.size > 16 * 1024 * 1024) {
                 return res.status(400).json({ error: 'Image size should not exceed 16MB.' });
-            }else if (!req.file.size) {
-                return res.status(400).json({ error: 'Uploaded file is invalid.' });
             }
             imageBase64 = req.file.buffer.toString('base64');
         }

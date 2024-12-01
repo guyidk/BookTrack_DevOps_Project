@@ -48,10 +48,6 @@ function isValidISBN(isbn) {
 
 // Function to open the update form with current book details
 async function editBook(bookId) {
-    if (!bookId) {
-        alert('Invalid book ID.');
-        return;
-    }
 
     try {
         // Fetch the book details from the server using the book ID
@@ -170,51 +166,3 @@ document.getElementById('editBookForm').addEventListener('submit', async functio
         alert('An error occurred while updating the book. Please check the console for details.');
     }
 });
-
-// Function to fetch a book by ID
-function getBookById(bookId) {
-    // Validate the provided book ID
-    if (!bookId || typeof bookId !== 'string' || bookId.trim() === '') {
-        alert('Invalid book ID. Please provide a valid ID.');
-        return; // Exit function if the book ID is invalid
-    }
-
-    const request = new XMLHttpRequest();
-    // Open a GET request to fetch a specific book by its ID, using template literals in the URL
-    request.open('GET', `http://localhost:5500/books/${bookId}`, true);
-
-    // Define the onload event handler for the request
-    request.onload = function () {
-        // Check if the request was successful (status code between 200 and 299)
-        if (request.status >= 200 && request.status < 300) {
-            // Parse the JSON response to get the book object
-            const book = JSON.parse(request.responseText);
-            displayBookDetails(book); // Call displayBookDetails to render the book details
-        }
-        // If the status is 400, alert about invalid book ID format
-        else if (request.status === 400) {
-            alert('Invalid book ID format. Please check the ID and try again.');
-            console.error('Invalid book ID format:', request.statusText);
-        }
-        // If the status is 404, alert that the book was not found
-        else if (request.status === 404) {
-            alert('Book not found. It may have been removed.');
-            console.error('Book not found:', request.statusText);
-        }
-        // Handle other unsuccessful status codes by alerting the user
-        else {
-            alert('Failed to retrieve book details. Please try again later.');
-            console.error('Failed to fetch book:', request.statusText);
-        }
-    };
-
-    // Define the onerror event handler for network errors
-    request.onerror = function () {
-        // Log a network error and alert the user
-        console.error('Network error while fetching book');
-        alert('An error occurred while fetching the book. Please check the console for details.');
-    };
-
-    // Send the request to the server
-    request.send();
-}
