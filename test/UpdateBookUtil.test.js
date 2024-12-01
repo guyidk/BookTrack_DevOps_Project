@@ -52,7 +52,7 @@ describe('Update Book Utility', () => {
             expect(res.body.error).toBe('Image size should not exceed 16MB.');
         });
 
-        it('should convert the uploaded file to base64 if size is valid', async () => {
+        it('should convert the uploaded file to base64 if size is valid and test if it returns 200 and update the book successfully', async () => {
             // Mock the existing book and the update operation
             Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' });
             Book.findByIdAndUpdate.mockResolvedValue({
@@ -123,6 +123,21 @@ describe('Update Book Utility', () => {
             expect(res.body.error).toBe('Available copies should be more that 0');
         });
 
+        it('should return 400 if title already exists', async () => {
+            Book.findOne.mockResolvedValue({ _id: '7890127', title: 'Duplicate Title' }); // Simulate duplicate title
+            const res = await request.put('/updateBook/123456')
+                .send({
+                    title: 'Duplicate Title',
+                    author: 'Valid Author',
+                    isbn: '123456789',
+                    genre: 'Fiction',
+                    availableCopies: 10
+                });
+        
+            expect(res.status).toBe(400);
+            expect(res.body.error).toBe('Title already exists.');
+        });
+
         it('should return 404 if the book does not exist', async () => {
             Book.findById.mockResolvedValue(null); // Simulate book not found
             const res = await request.put('/updateBook/123456')
@@ -138,42 +153,7 @@ describe('Update Book Utility', () => {
             expect(res.body.error).toBe('Book not found');
         });
 
-        it('should return 200 and update the book successfully', async () => {
-            Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' }); // Simulate existing book
-            Book.findByIdAndUpdate.mockResolvedValue({
-                _id: '123456',
-                title: 'New Title',
-                author: 'New Author'
-            }); // Simulate updated book
-
-            const res = await request.put('/updateBook/123456')
-                .send({
-                    title: 'New Title',
-                    author: 'New Author',
-                    isbn: '123456789',
-                    genre: 'Fiction',
-                    availableCopies: 10
-                });
-
-            expect(res.status).toBe(200);
-            expect(res.body.message).toBe('Book updated successfully!');
-            expect(res.body.book.title).toBe('New Title');
-        });
-
-        it('should return 400 if title already exists', async () => {
-            Book.findOne.mockResolvedValue({ _id: '7890127', title: 'Duplicate Title' }); // Simulate duplicate title
-            const res = await request.put('/updateBook/123456')
-                .send({
-                    title: 'Duplicate Title',
-                    author: 'Valid Author',
-                    isbn: '123456789',
-                    genre: 'Fiction',
-                    availableCopies: 10
-                });
         
-            expect(res.status).toBe(400);
-            expect(res.body.error).toBe('Title already exists.');
-        });
         
         it('should log error and return 500 if an error occurs during book update', async () => {
             // Simulate an error being thrown by Book.findById

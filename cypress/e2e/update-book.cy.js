@@ -71,7 +71,7 @@ describe('Update Book Frontend', () => {
     cy.get('#editBookPreviewImage').should('not.be.visible');
   });
 
-  it("should not preview the image and show an alert if the file size is too large", () => {
+  it('should not preview the image and show an alert if the file size is too large', () => {
 
     cy.get('.book-card').first().within(() => {
       cy.get('input#editBtn').click();
@@ -198,6 +198,7 @@ describe('Update Book Frontend', () => {
   });
 
   //Successfull update-----------------------------------------------------------------------------------------------------------------
+  
   it('should handle form submission correctly', () => {
 
     // Trigger the edit form for the first book
@@ -425,7 +426,7 @@ describe('Update Book Frontend', () => {
       cy.get('input#editBtn').click();
     });
 
-    cy.get('#editTitle').clear().type('The Enchanted Forest: A Journey Through the Forgotten Realms, Where Magic Breathes and Legends Come to Life in Every Leaf and Branch, Waiting to Be Unfolded'); // Duplicate title
+    cy.get('#editTitle').clear().type('a'.repeat(105));
     cy.get('#editAuthor').clear().type('Updated Author');
     cy.get('#editIsbn').clear().type('978-3-16-148410-0');
     cy.get('#editBookForm').submit();
@@ -441,7 +442,7 @@ describe('Update Book Frontend', () => {
       cy.get('input#editBtn').click();
     });
 
-    cy.get('#editTitle').clear().type('author check Title'); // Duplicate title
+    cy.get('#editTitle').clear().type('author check Title');
     cy.get('#editAuthor').clear().type('a'.repeat(151));
     cy.get('#editIsbn').clear().type('978-0062439591');
     cy.get('#editBookForm').submit();
