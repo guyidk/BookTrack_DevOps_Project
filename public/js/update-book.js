@@ -162,7 +162,6 @@ document.getElementById('editBookForm').addEventListener('submit', async functio
             alert('Failed to update book. Please try again later.');
         }
     } catch (error) {
-        console.error('Error updating book:', error);
         alert('An error occurred while updating the book. Please check the console for details.');
     }
 });
