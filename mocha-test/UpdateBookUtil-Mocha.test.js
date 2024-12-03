@@ -24,7 +24,25 @@ describe('Update Book API', () => {
         sinon.restore(); // Restore Sinon stubs after each test
     });
 
-    describe('updateBook', () => {        
+    describe('updateBook', () => {
+        
+        it('should handle null updatedBook gracefully', async () => {
+            sinon.stub(Book, 'findById').resolves({ _id: '123456', title: 'Old Title' });
+            sinon.stub(Book, 'findByIdAndUpdate').resolves(null);
+        
+            const res = await chai.request(app)
+                .put('/updateBook/123456')
+                .send({
+                    title: 'Valid Title',
+                    author: 'Valid Author',
+                    isbn: '123456789',
+                    genre: 'Fiction',
+                    availableCopies: 10,
+                });
+        
+            expect(res).to.have.status(500);
+            expect(res.body.error).to.equal('Failed to update the book.');
+        });
         
         it('should return 400 if the uploaded file size exceeds 16MB', async () => {
             // Mock the Book model
@@ -47,10 +65,10 @@ describe('Update Book API', () => {
         });
 
         it('should convert the uploaded file to base64 if size is valid and update the book successfully', async () => {
-            sinon.stub(Book, 'findById').resolves({ _id: '123456', title: 'Old Title' });
+            sinon.stub(Book, 'findById').resolves({ _id: '123456', title: 'Exisitng Title' });
             sinon.stub(Book, 'findByIdAndUpdate').resolves({
                 _id: '123456',
-                title: 'New Title',
+                title: 'Exisitng Title',
                 author: 'Valid Author',
                 isbn: '123456789',
                 genre: 'Fiction',
@@ -63,7 +81,7 @@ describe('Update Book API', () => {
             const res = await chai.request(app)
                 .put('/updateBook/123456')
                 .attach('image', validFile, 'valid-image.jpg')
-                .field('title', 'New Title')
+                .field('title', 'Exisitng Title')
                 .field('author', 'Valid Author')
                 .field('isbn', '123456789')
                 .field('genre', 'Fiction')
@@ -221,22 +239,6 @@ describe('Update Book API', () => {
                 });
         });
 
-        it('should log error and return 500 if an error occurs while fetching the book', (done) => {
-            sinon.stub(Book, 'findById').rejects(new Error('Database error')); // Simulate a database error
-        
-            const consoleErrorStub = sinon.stub(console, 'error'); // Stub console.error to suppress actual logging
-        
-            chai.request(app)
-                .get('/books/5f8f2c8b6a9d1e2b3c7b8f9a')
-                .end((err, res) => {
-                    expect(res).to.have.status(500);
-                    expect(res.text).to.equal('Server error');
-                    expect(consoleErrorStub.calledWithMatch('Error fetching book by ID:')).to.be.true;
-        
-                    consoleErrorStub.restore(); // Restore the original console.error
-                    done();
-                });
-        });
         it('should log error and return 500 if an error occurs while fetching the book', (done) => {
             sinon.stub(Book, 'findById').rejects(new Error('Database error')); // Simulate a database error
         
