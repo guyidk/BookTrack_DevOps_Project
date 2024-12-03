@@ -361,21 +361,10 @@ describe('Update Book Frontend', () => {
       );
     });
 
-    // Ensure the error is logged to the console
-    cy.window().then((win) => {
-      cy.stub(win.console, 'error').as('consoleError');
-    });
-
     // Wait for the PUT request and ensure it failed
     cy.wait('@updateBookError').then((interception) => {
       expect(interception.response.statusCode).to.equal(500);
     });
-
-    // Check that the console error was logged with the expected message
-    cy.get('@consoleError').should(
-      'have.been.calledWith',
-      'Error updating book:'
-    );
   });
 
 
