@@ -10,6 +10,7 @@
     "frontend-test-electron": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run",
     "frontend-test-chrome": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run --browser chrome",
     "frontend-test-edge": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run --browser edge",
+    "frontend-test-firefox": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run --browser firefox",
     "frontend-test-opera": "rmdir -r .nyc_output & nyc --nycrc-path .nycrc-frontend cypress run --browser opera",
     "start": "nodemon index.js"
   },
