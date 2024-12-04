@@ -33,6 +33,26 @@ describe('Update Book API', () => {
 
     describe('updateBook', () => {
 
+        it('should handle null updatedBook gracefully', async () => {
+            // Mock the behavior of the Book model methods
+            Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' }); // Mocking a found book
+            Book.findByIdAndUpdate.mockResolvedValue(null); // Simulate a failed update
+        
+            // Make the PUT request to the API endpoint
+            const res = await request.put('/updateBook/123456')
+                .send({
+                    title: 'Valid Title',
+                    author: 'Valid Author',
+                    isbn: '123456789',
+                    genre: 'Fiction',
+                    availableCopies: 10,
+                });
+        
+            // Assertions
+            expect(res.status).toBe(500); // Verify the response status is 500
+            expect(res.body.error).toBe('Failed to update the book.'); // Check the error message
+        });        
+
         it('should return 400 if the uploaded file size exceeds 16MB', async () => {
             // Mock the existing book to simulate it being found
             Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' });
