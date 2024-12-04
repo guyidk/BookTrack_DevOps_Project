@@ -53,6 +53,7 @@ describe('Update Book API', () => {
             expect(res.body.error).toBe('Failed to update the book.'); // Check the error message
         });        
 
+
         it('should return 400 if the uploaded file size exceeds 16MB', async () => {
             // Mock the existing book to simulate it being found
             Book.findById.mockResolvedValue({ _id: '123456', title: 'Old Title' });
