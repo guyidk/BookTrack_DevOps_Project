@@ -210,7 +210,13 @@ describe('Update Book Frontend', () => {
     cy.get('#editTitle').clear().type('Valid Book Title');
     cy.get('#editAuthor').clear().type('Valid Author Name');
     cy.get('#editIsbn').clear().type('978-3-16-148410-0');
-    cy.get('#image').attachFile('images/valid-test-image.jpg');
+    cy.get("#editImage").then(($input) => {
+      // Trigger change event with no files
+      const inputElement = $input[0];
+      const changeEvent = new Event('change', { bubbles: true });
+      inputElement.value = ''; // Clear the value
+      inputElement.dispatchEvent(changeEvent);
+    });
 
     // Stub the PUT request to simulate a successful update
     cy.intercept('PUT', '/updateBook/*', {

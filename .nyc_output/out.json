@@ -1,6 +1,6 @@
 {
-  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\get-book.js": {
-    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\get-book.js",
+  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\get-book.js": {
+    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\get-book.js",
     "statementMap": {
       "0": {
         "start": {
@@ -1192,15 +1192,15 @@
       }
     },
     "s": {
-      "0": 19,
-      "1": 19,
-      "2": 19,
-      "3": 19,
-      "4": 18,
-      "5": 18,
-      "6": 18,
-      "7": 18,
-      "8": 18,
+      "0": 20,
+      "1": 20,
+      "2": 20,
+      "3": 20,
+      "4": 20,
+      "5": 20,
+      "6": 20,
+      "7": 20,
+      "8": 20,
       "9": 0,
       "10": 0,
       "11": 0,
@@ -1208,21 +1208,21 @@
       "13": 0,
       "14": 0,
       "15": 0,
-      "16": 19,
+      "16": 20,
       "17": 0,
       "18": 0,
       "19": 0,
-      "20": 19,
-      "21": 18,
-      "22": 18,
+      "20": 20,
+      "21": 20,
+      "22": 20,
       "23": 0,
       "24": 0,
-      "25": 18,
-      "26": 18,
-      "27": 18,
-      "28": 18,
+      "25": 20,
+      "26": 20,
+      "27": 20,
+      "28": 20,
       "29": 0,
-      "30": 18,
+      "30": 20,
       "31": 0,
       "32": 0,
       "33": 0,
@@ -1246,22 +1246,22 @@
       "51": 0
     },
     "f": {
-      "0": 19,
-      "1": 18,
+      "0": 20,
+      "1": 20,
       "2": 0,
-      "3": 18,
+      "3": 20,
       "4": 0,
       "5": 0,
       "6": 0
     },
     "b": {
       "0": [
-        18,
+        20,
         0
       ],
       "1": [
-        18,
-        18
+        20,
+        20
       ],
       "2": [
         0,
@@ -1269,22 +1269,22 @@
       ],
       "3": [
         0,
-        18
+        20
       ],
       "4": [
-        18,
-        18
+        20,
+        20
       ],
       "5": [
-        18,
+        20,
         0
       ],
       "6": [
-        18,
-        18,
-        18,
-        18,
-        18
+        20,
+        20,
+        20,
+        20,
+        20
       ],
       "7": [
         0,
@@ -1313,10 +1313,10 @@
       ]
     },
     "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-    "hash": "ed09da56259bc5d6c180d8e32c2420b98f4e08bc"
+    "hash": "0f3caf5707663f830ea7127e83a7275342f8cf77"
   },
-  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\search-books.js": {
-    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\search-books.js",
+  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\search-books.js": {
+    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\search-books.js",
     "statementMap": {
       "0": {
         "start": {
@@ -2206,10 +2206,10 @@
       ]
     },
     "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-    "hash": "9dcb8b23b10d66b59732ea8294dbf9d01efdb63b"
+    "hash": "4af920fc4f93447d40f21c7cae27f84ab296b63d"
   },
-  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\add-book.js": {
-    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\add-book.js",
+  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\add-book.js": {
+    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\add-book.js",
     "statementMap": {
       "0": {
         "start": {
@@ -3497,7 +3497,7 @@
       }
     },
     "s": {
-      "0": 18,
+      "0": 19,
       "1": 0,
       "2": 0,
       "3": 0,
@@ -3547,19 +3547,19 @@
       "47": 0,
       "48": 0,
       "49": 0,
-      "50": 18,
-      "51": 1,
-      "52": 1,
-      "53": 1,
-      "54": 1,
-      "55": 1,
+      "50": 19,
+      "51": 0,
+      "52": 0,
+      "53": 0,
+      "54": 0,
+      "55": 0,
       "56": 0,
       "57": 0,
       "58": 0,
       "59": 0,
-      "60": 1,
-      "61": 1,
-      "62": 1,
+      "60": 0,
+      "61": 0,
+      "62": 0,
       "63": 0,
       "64": 0,
       "65": 0,
@@ -3569,12 +3569,12 @@
       "69": 0,
       "70": 0,
       "71": 0,
-      "72": 18
+      "72": 19
     },
     "f": {
-      "0": 18,
+      "0": 19,
       "1": 0,
-      "2": 1,
+      "2": 0,
       "3": 0,
       "4": 0
     },
@@ -3624,19 +3624,19 @@
         0
       ],
       "10": [
-        1,
+        0,
         0
       ],
       "11": [
         0,
-        1
+        0
       ]
     },
     "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-    "hash": "a9a0e0a9b284caad370f83a62e395b1b1da5e0be"
+    "hash": "10c5a68a3f432e3a60359f9c3eb4e42f13912ebc"
   },
-  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\add-transaction.js": {
-    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\add-transaction.js",
+  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\add-transaction.js": {
+    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\add-transaction.js",
     "statementMap": {
       "0": {
         "start": {
@@ -4698,10 +4698,10 @@
       ]
     },
     "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-    "hash": "177cb0b77caddb795991ad1edc2101e06d65628b"
+    "hash": "88cbc0ff51d4c221e4ba435d3ecdacd108f86327"
   },
-  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\update-book.js": {
-    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\Front-end\\BookTrack_DevOps_Project\\public\\js\\update-book.js",
+  "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\update-book.js": {
+    "path": "C:\\My_stuff\\TP\\Year_2_Semester_2\\DevOps\\main\\BookTrack_DevOps_Project\\public\\js\\update-book.js",
     "statementMap": {
       "0": {
         "start": {
@@ -6573,9 +6573,9 @@
       "49": 1,
       "50": 1,
       "51": 1,
-      "52": 18,
-      "53": 2,
-      "54": 2,
+      "52": 19,
+      "53": 3,
+      "54": 3,
       "55": 2,
       "56": 1,
       "57": 1,
@@ -6586,7 +6586,7 @@
       "62": 1,
       "63": 1,
       "64": 1,
-      "65": 18,
+      "65": 19,
       "66": 13,
       "67": 13,
       "68": 13,
@@ -6624,7 +6624,7 @@
       "2": 6,
       "3": 11,
       "4": 18,
-      "5": 2,
+      "5": 3,
       "6": 1,
       "7": 13
     },
@@ -6679,7 +6679,7 @@
       ],
       "12": [
         2,
-        0
+        1
       ],
       "13": [
         1,
@@ -6711,6 +6711,6 @@
       ]
     },
     "_coverageSchema": "1a1c01bbd47fc00a2c39e90264f33305004495a9",
-    "hash": "a3a0c6a9ba519445c5fcbcd1ec39d118f8de8377"
+    "hash": "d0c860f02755113dc58fbd9b088635f702ad6d86"
   }
 }
