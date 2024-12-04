@@ -61,9 +61,8 @@ async function updateBook(req, res) {
 
         if (updatedBook) {
             res.status(200).json({ message: 'Book updated successfully!', book: updatedBook });
-        }  else {
-            res.status(500).json({ error: 'Failed to update the book.' });
-        }
+        }else {
+            return res.status(500).json({ error: 'Failed to update the book.' });
         
     } catch (error) {
         console.error('Error updating book:', error);

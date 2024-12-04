@@ -51,8 +51,8 @@ describe('Update Book API', () => {
             // Assertions
             expect(res.status).toBe(500); // Verify the response status is 500
             expect(res.body.error).toBe('Failed to update the book.'); // Check the error message
-        });
-        
+        });        
+
 
         it('should return 400 if the uploaded file size exceeds 16MB', async () => {
             // Mock the existing book to simulate it being found
