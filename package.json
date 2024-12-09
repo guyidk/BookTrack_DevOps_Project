@@ -23,7 +23,7 @@
     "chai-http": "^4.3.0",
     "cors": "^2.8.5",
     "cypress": "^13.16.0",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
     "fs": "^0.0.1-security",
     "mocha": "^10.8.2",
